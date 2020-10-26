@@ -200,3 +200,14 @@ void add_card(STATE* SYSTEM_STATE)
 {
 
 }
+Card create_card(char* new_id)
+{
+    // creates and initializes a new card
+    Card new_card;
+
+    strcpy(new_card.ID, new_id);
+    new_card.access = false;
+    new_card.date_added = time(NULL);
+
+    return new_card;
+}
