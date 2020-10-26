@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30406.217
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "inlupp_1C", "inlupp_1C.vcxproj", "{AFE81800-82E4-42E9-BBFB-00966FA71F6F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AFE81800-82E4-42E9-BBFB-00966FA71F6F}.Debug|x64.ActiveCfg = Debug|x64
+		{AFE81800-82E4-42E9-BBFB-00966FA71F6F}.Debug|x64.Build.0 = Debug|x64
+		{AFE81800-82E4-42E9-BBFB-00966FA71F6F}.Debug|x86.ActiveCfg = Debug|Win32
+		{AFE81800-82E4-42E9-BBFB-00966FA71F6F}.Debug|x86.Build.0 = Debug|Win32
+		{AFE81800-82E4-42E9-BBFB-00966FA71F6F}.Release|x64.ActiveCfg = Release|x64
+		{AFE81800-82E4-42E9-BBFB-00966FA71F6F}.Release|x64.Build.0 = Release|x64
+		{AFE81800-82E4-42E9-BBFB-00966FA71F6F}.Release|x86.ActiveCfg = Release|Win32
+		{AFE81800-82E4-42E9-BBFB-00966FA71F6F}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B35E9E85-9F40-42FA-966C-3B075CD5F884}
+	EndGlobalSection
+EndGlobal
