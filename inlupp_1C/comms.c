@@ -16,9 +16,15 @@ void remote_open_door(STATE* SYSTEM_STATE)
 }
 bool send_card(Card* card, SERIALPORT* port, char* commands[])
 {
+    char message[BUFFERSIZE];
+
+    strcat(message, commands[ADDCARD]);
+    strcat(message, ".");
+    strcat(message, card->ID);
+
     SerialWritePort(
         *port,
-        commands[ADDCARD],
+        message,
         BUFFERSIZE
     );
 }
