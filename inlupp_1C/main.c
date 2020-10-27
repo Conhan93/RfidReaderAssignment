@@ -194,18 +194,15 @@ void expand_list(STATE* SYSTEM_STATE)
 {
     
     if (SYSTEM_STATE->nr_cards <= 0)
-    {
-        SYSTEM_STATE->card_list = malloc(sizeof(Card));
-        //SYSTEM_STATE->nr_cards = 1;
-    }
-    else
-    {
-        SYSTEM_STATE->card_list = realloc(
+    
+    SYSTEM_STATE->card_list = malloc(sizeof(Card));
+
+    else    
+        SYSTEM_STATE->card_list = realloc
+        (
             SYSTEM_STATE->card_list,
             sizeof(Card) * (SYSTEM_STATE->nr_cards + 1)
         );
-        //SYSTEM_STATE->nr_cards++;
-    }
 }
 Card create_card(char* new_id)
 {
