@@ -14,7 +14,7 @@
 
 void format_date_string(time_t date_added, char* buffer, int buffersize);
 void list_cards(STATE* SYSTEM_STATE);
-void remote_open_door(STATE* SYSTEM_STATE);
+
 Card* search_id(Card* card_list, int nr_cards, char* search_term);
 void change_card_access(STATE* SYSTEM_STATE);
 int admin_menu();
@@ -75,16 +75,6 @@ int admin_menu()
 
     return selection;
 }
-void remote_open_door(STATE* SYSTEM_STATE)
-{
-
-    SerialWritePort(
-        SYSTEM_STATE->port,
-        SYSTEM_STATE->cmds[CLEARCARDS],
-        BUFFERSIZE
-    );
-}
-
 void list_cards(STATE* SYSTEM_STATE)
 {
     // displays all cards in system.

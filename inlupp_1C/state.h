@@ -3,6 +3,7 @@
 #include "serial.h"
 
 #define STRLEN 30
+#define BUFFERSIZE 40
 
 typedef struct
 {
