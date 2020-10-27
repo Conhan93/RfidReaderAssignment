@@ -142,8 +142,10 @@
     <ClCompile Include="main.c" />
     <ClCompile Include="serial.c" />
     <ClCompile Include="safeinput.c" />
+    <ClCompile Include="state.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="state.h" />
     <ClInclude Include="safeinput.h" />
     <ClInclude Include="serial.h" />
   </ItemGroup>

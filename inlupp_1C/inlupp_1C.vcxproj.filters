@@ -24,12 +24,18 @@
     <ClCompile Include="safeinput.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="state.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="serial.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="safeinput.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="state.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

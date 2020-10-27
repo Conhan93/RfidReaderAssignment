@@ -27,7 +27,7 @@ bool GetInputFloat(char* prompt, float* value)
 	float l = -100000000.0f;
 
 
-	l = strtof(buff, NULL, 10);
+	l = strtof(buff, NULL);
 	if (l == -100000000.0f) return false;
 	*value = l;
 
