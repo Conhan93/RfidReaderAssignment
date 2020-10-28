@@ -14,7 +14,8 @@
 void format_date_string(time_t date_added, char* buffer, int buffersize);
 void list_cards(STATE* SYSTEM_STATE);
 void save_to_file(STATE* SYSTEM_STATE);
-Card* search_id(Card* card_list, int nr_cards, char* search_term);
+Card* search_id(STATE* SYSTEM_STATE);
+Card* get_card(Card* card_list, int nr_cards, char* search_term);
 void change_card_access(STATE* SYSTEM_STATE);
 int admin_menu();
 void add_card(STATE* SYSTEM_STATE);
@@ -23,7 +24,8 @@ void expand_list(STATE* SYSTEM_STATE);
 Card create_card(char* new_id);
 
 void remote_open_door(STATE* SYSTEM_STATE);
-bool send_card(Card* card, SERIALPORT* port, char* commands[]);
+void send_card(STATE* SYSTEM_STATE);
+void create_message(char* message_string, Card* card, char* commands[]);
 bool clear_cards(STATE* SYSTEM_STATE);
 
 bool load_file(STATE* SYSTEM_STATE);
@@ -61,6 +63,12 @@ int main()
         case 5:
             save_to_file(&SYSTEM_STATE);
             break;
+        case 6:
+            send_card(&SYSTEM_STATE);
+            break;
+        case 7:
+            clear_cards(&SYSTEM_STATE);
+            break;
         case 9:
             return 0;
 
@@ -72,13 +80,18 @@ int main()
 }
 int admin_menu()
 {
+    /*  Prints main menu and gets menu input    */
+
     int selection = 0;
 
-    printf("\nAdmin menu");
+    printf("\n\n\n****ADMIN MENU****\n");
     printf("\n1.Remote Open Door"
         "\n2. List all cards in system"
         "\n3. Add card to list"
         "\n4. Add/remove access"
+        "\n5. Save cards to file"
+        "\n6. Send a card to device"
+        "\n7. Clear all cards on device"
         "\n9. Exit\n");
 
     GetInputInt(NULL, &selection);
@@ -90,6 +103,9 @@ void list_cards(STATE* SYSTEM_STATE)
     // displays all cards in system.
     char date_string[STRLEN];
 
+    printf("\nID\t\t\tACCESS\tDATE ADDED\n"
+    "-------------------------------------------");
+
     for (int index = 0; index < SYSTEM_STATE->nr_cards; index++)
     {
         format_date_string(
@@ -97,7 +113,7 @@ void list_cards(STATE* SYSTEM_STATE)
             date_string,
             sizeof(date_string)
         );
-
+        
         printf("\n%s\t%s\t%s",
             SYSTEM_STATE->card_list[index].ID,
             SYSTEM_STATE->card_list[index].access ? "Access" : "No Access",
@@ -108,24 +124,15 @@ void list_cards(STATE* SYSTEM_STATE)
 void change_card_access(STATE* SYSTEM_STATE)
 {
     Card* active_card = NULL;
-    char search_term[STRLEN];
 
-    while (active_card == NULL)
-    {
-        if (GetInput("Enter card ID: ", search_term, sizeof(search_term)) == INPUT_RESULT_OK)
-        {
-            if (!strcmp(search_term, "exit")) return;
+    // fetch card, exits if null
+    if ((active_card = search_id(SYSTEM_STATE)) == NULL) return;
 
-            active_card = search_id(
-                SYSTEM_STATE->card_list,
-                SYSTEM_STATE->nr_cards,
-                search_term
-            );
-        }
-    }
     int new_access = 0;
+
     printf("\nThis card has %s, enter 1 for access, 2 for no access",
         active_card->access ? "access" : "no access");
+    // sets new access for card
     if (GetInputInt(NULL, &new_access))
     {
         if (new_access == 0 || new_access == 1)
@@ -134,8 +141,33 @@ void change_card_access(STATE* SYSTEM_STATE)
     }
 
 }
-Card* search_id(Card* card_list, int nr_cards, char* search_term)
+Card* search_id(STATE* SYSTEM_STATE)
 {
+    /*  Interface for card ID search    */
+
+
+    Card* active_card = NULL;
+    char search_term[STRLEN];
+
+    while (active_card == NULL)
+    {
+        if (GetInput("Enter card ID: ", search_term, sizeof(search_term)) == INPUT_RESULT_OK)
+        {
+            if (!strcmp(search_term, "exit")) return NULL;
+
+            active_card = get_card(
+                SYSTEM_STATE->card_list,
+                SYSTEM_STATE->nr_cards,
+                search_term
+            );
+        }
+    }
+    return active_card;
+}
+Card* get_card(Card* card_list, int nr_cards, char* search_term)
+{
+    /*   Loops through card list comparing ID:s and returns card with matching ID   */
+
     Card* active_card;
 
     for (int index = 0; index < nr_cards; index++)
@@ -143,6 +175,7 @@ Card* search_id(Card* card_list, int nr_cards, char* search_term)
         if (!strcmp(search_term, card_list[index].ID))
             return active_card = &card_list[index];
     }
+    // returns NULL if card is not found
     return NULL;
 }
 void format_date_string(time_t date_added, char* buffer, int buffersize)
@@ -178,15 +211,18 @@ bool valid_id(char* new_id)
     // checks if new card id input is valid or not
     char temp[STRLEN], delim[] = ".";
     char* digit;
+    int counter = 0;
 
     strcpy(temp, new_id);
 
     digit = strtok(temp, delim);
-    while (digit != NULL)
+    while (digit != NULL && counter <= 5)
     {
         if (atoi(digit) > 257 || atoi(digit) < 0) return false;
 
         else digit = strtok(NULL, delim);
+
+        counter++;
     }
     return true;
 }
@@ -226,22 +262,40 @@ void remote_open_door(STATE* SYSTEM_STATE)
         BUFFERSIZE
     );
 }
-bool send_card(Card* card, SERIALPORT* port, char* commands[])
+void send_card(STATE* SYSTEM_STATE)
 {
-    char message[BUFFERSIZE];
+    /*    Sequence for adding a card to device.     */
 
-    strcat(message, commands[ADDCARD]);
-    strcat(message, ".");
-    strcat(message, card->ID);
+    Card* active_card = NULL;
+    char message[BUFFERSIZE] = "";
 
+    // fetch card
+    if ((active_card = search_id(SYSTEM_STATE)) == NULL) return;
+    
+    // compose message to device
+    create_message(message,
+        active_card,
+        SYSTEM_STATE->cmds[ADDCARD]
+    );
+
+    printf("\nSent this: %s", message);
+    return;
+    // send message to device
     SerialWritePort(
-        *port,
+        SYSTEM_STATE->port,
         message,
         BUFFERSIZE
     );
 }
+void create_message(char* message_string, Card* card, char* command)
+{
+    // concatenates command and card ID
+    strcat(message_string, command);
+    strcat(message_string, card->ID);
+}
 bool clear_cards(STATE* SYSTEM_STATE)
 {
+    // clears stored cards on device
     SerialWritePort(
         SYSTEM_STATE->port,
         SYSTEM_STATE->cmds[CLEARCARDS],
