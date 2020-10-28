@@ -70,6 +70,7 @@ int main()
             clear_cards(&SYSTEM_STATE);
             break;
         case 9:
+            SerialClose(SYSTEM_STATE.port);
             return 0;
 
         default:
@@ -103,8 +104,8 @@ void list_cards(STATE* SYSTEM_STATE)
     // displays all cards in system.
     char date_string[STRLEN];
 
-    printf("\nID\t\t\tACCESS\tDATE ADDED\n"
-    "-------------------------------------------");
+    printf("\nID\t\t\tACCESS\t\t\tDATE ADDED\n"
+    "------------------------------------------------------------");
 
     for (int index = 0; index < SYSTEM_STATE->nr_cards; index++)
     {
@@ -114,7 +115,7 @@ void list_cards(STATE* SYSTEM_STATE)
             sizeof(date_string)
         );
         
-        printf("\n%s\t%s\t%s",
+        printf("\n%-20s\t%-20s\t%s",
             SYSTEM_STATE->card_list[index].ID,
             SYSTEM_STATE->card_list[index].access ? "Access" : "No Access",
             date_string
@@ -216,7 +217,7 @@ bool valid_id(char* new_id)
     strcpy(temp, new_id);
 
     digit = strtok(temp, delim);
-    while (digit != NULL && counter <= 5)
+    while (digit != NULL && counter == 5)
     {
         if (atoi(digit) > 257 || atoi(digit) < 0) return false;
 
