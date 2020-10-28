@@ -114,7 +114,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
@@ -142,11 +142,9 @@
     <ClCompile Include="main.c" />
     <ClCompile Include="serial.c" />
     <ClCompile Include="safeinput.c" />
-    <ClCompile Include="comms.c" />
     <ClCompile Include="state.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="comms.h" />
     <ClInclude Include="state.h" />
     <ClInclude Include="safeinput.h" />
     <ClInclude Include="serial.h" />

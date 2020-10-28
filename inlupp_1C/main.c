@@ -1,4 +1,3 @@
-#define _CRT_SECURE_NO_WARNINGS 1
 #include <stdio.h>
 #include <time.h>
 #include "serial.h"
@@ -14,7 +13,7 @@
 
 void format_date_string(time_t date_added, char* buffer, int buffersize);
 void list_cards(STATE* SYSTEM_STATE);
-
+void save_to_file(STATE* SYSTEM_STATE);
 Card* search_id(Card* card_list, int nr_cards, char* search_term);
 void change_card_access(STATE* SYSTEM_STATE);
 int admin_menu();
@@ -23,12 +22,20 @@ bool valid_id(char* new_id);
 void expand_list(STATE* SYSTEM_STATE);
 Card create_card(char* new_id);
 
+void remote_open_door(STATE* SYSTEM_STATE);
+bool send_card(Card* card, SERIALPORT* port, char* commands[]);
+bool clear_cards(STATE* SYSTEM_STATE);
+
+bool load_file(STATE* SYSTEM_STATE);
+
 int main()
 {
 
     STATE SYSTEM_STATE;
 
     initialize_state(&SYSTEM_STATE);
+
+    printf("\n%s", load_file(&SYSTEM_STATE) ? "files loaded" : "unable to load files");
 
 
 
@@ -50,6 +57,9 @@ int main()
             break;
         case 4:
             change_card_access(&SYSTEM_STATE);
+            break;
+        case 5:
+            save_to_file(&SYSTEM_STATE);
             break;
         case 9:
             return 0;
@@ -206,4 +216,96 @@ Card create_card(char* new_id)
 
 
     return new_card;
+}
+void remote_open_door(STATE* SYSTEM_STATE)
+{
+
+    SerialWritePort(
+        SYSTEM_STATE->port,
+        SYSTEM_STATE->cmds[OPENDOOR],
+        BUFFERSIZE
+    );
+}
+bool send_card(Card* card, SERIALPORT* port, char* commands[])
+{
+    char message[BUFFERSIZE];
+
+    strcat(message, commands[ADDCARD]);
+    strcat(message, ".");
+    strcat(message, card->ID);
+
+    SerialWritePort(
+        *port,
+        message,
+        BUFFERSIZE
+    );
+}
+bool clear_cards(STATE* SYSTEM_STATE)
+{
+    SerialWritePort(
+        SYSTEM_STATE->port,
+        SYSTEM_STATE->cmds[CLEARCARDS],
+        BUFFERSIZE
+    );
+}
+void save_to_file(STATE* SYSTEM_STATE)
+{
+    char filename[] = "cards.bin";
+
+    FILE* file_ptr;
+
+    file_ptr = fopen(filename, "wb");
+    if (file_ptr)
+    {
+        fwrite(
+            SYSTEM_STATE->card_list,
+            sizeof(Card),
+            SYSTEM_STATE->nr_cards,
+            file_ptr
+        );
+    }
+
+    fclose(file_ptr);
+}
+int get_file_size(FILE* file_ptr)
+{
+    int start = ftell(file_ptr);
+
+    fseek(file_ptr, 0L, SEEK_END);
+
+    int size = ftell(file_ptr);
+
+    fseek(file_ptr, start, SEEK_SET);
+
+    return size;
+}
+bool load_file(STATE* SYSTEM_STATE)
+{
+    char filename[] = "cards.bin";
+    int filesize = 0;
+
+    FILE* file_ptr;
+
+    file_ptr = fopen(filename, "rb");
+
+    if (file_ptr == NULL)
+    {
+        fclose(file_ptr);
+        return false;
+    }
+
+    filesize = get_file_size(file_ptr);
+
+    SYSTEM_STATE->nr_cards = filesize / sizeof(Card);
+    expand_list(SYSTEM_STATE);
+
+    fread(SYSTEM_STATE->card_list,
+        sizeof(Card),
+        SYSTEM_STATE->nr_cards,
+        file_ptr
+    );
+
+    fclose(file_ptr);
+
+    return true;
 }

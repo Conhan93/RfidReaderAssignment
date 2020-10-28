@@ -1,6 +1,7 @@
 #include "state.h"
 
 
+
 void initialize_state(STATE* SYSTEM_STATE)
 {
     // System state initialization

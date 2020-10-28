@@ -1,6 +1,10 @@
+#ifndef STATE_INFO_INCLUDED
+#define STATE_INFO_INCLUDED
+
 #include <time.h>
 #include <string.h>
 #include "serial.h"
+
 
 #define STRLEN 30
 #define BUFFERSIZE 40
@@ -28,3 +32,5 @@ typedef enum
 } COMMANDS;
 
 void initialize_state(STATE* SYSTEM_STATE);
+
+#endif
