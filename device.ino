@@ -72,7 +72,6 @@ void loop(){
       nr_bytes_read++;
       if(input == '\0' || input == '\n')
       {
-        Serial.println(buffer);
         if(strstr(buffer,"ADDCARD") && nr_cards < 5)
         {
           add_card(buffer);
@@ -87,7 +86,7 @@ void loop(){
         }
         nr_bytes_read = 0;
       }
-      if(nr_bytes_read == 40)
+      if(nr_bytes_read  == 40)
       {
         nr_bytes_read = 0;
       }
@@ -132,7 +131,6 @@ void add_card(char* buffer)
             iteration++;
           }
           nr_cards++;
-          Serial.println("Card added!");
 }
 bool check_card()
 {
@@ -168,7 +166,6 @@ void clear_cards()
 }
 void green_light()
 { // opens door
-  Serial.println(F("Welcome Velleman "));
   digitalWrite(led, HIGH);
   delay(3000);
   digitalWrite(led, LOW);
