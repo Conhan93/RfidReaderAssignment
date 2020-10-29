@@ -27,6 +27,12 @@
     <ClCompile Include="admin.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="files.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="device_com.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="serial.h">

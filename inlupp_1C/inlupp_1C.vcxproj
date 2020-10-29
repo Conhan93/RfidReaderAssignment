@@ -143,6 +143,8 @@
     <ClCompile Include="serial.c" />
     <ClCompile Include="safeinput.c" />
     <ClCompile Include="admin.c" />
+    <ClCompile Include="files.c" />
+    <ClCompile Include="device_com.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="admin.h" />
