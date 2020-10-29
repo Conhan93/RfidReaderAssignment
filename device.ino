@@ -1,4 +1,3 @@
-
 /*
 * edited by Velleman / Patrick De Coninck
 * Read a card using a mfrc522 reader on your SPI interface
@@ -24,15 +23,18 @@
 RFID rfid(SS_PIN,RST_PIN);
 
 
-int power = 7;
+// led light for door
 int led = 8; 
 
 // stores read tag - 5 bytes
 unsigned char serNum[5];
 
+// number of cards stored on device - max set to 5 but can take more.
 int nr_cards = 0;
 
+// stores input
 char buffer[40];
+// recieves input
 char input;
 int nr_bytes_read = 0;
 
@@ -41,6 +43,7 @@ typedef struct
   unsigned char card_nr[5];
 } Card;
 
+// list of cards
 Card card_list[5];
 
 void setup(){
@@ -50,14 +53,9 @@ void setup(){
     SPI.begin();
     rfid.init();
 
-    
-/*
-* define VMA100 (UNO) pins 7 & 8 as outputs and put them LOW
-*/
+    // set up for led light
     pinMode(led, OUTPUT);
-    pinMode (power,OUTPUT);
     digitalWrite(led, LOW);
-    digitalWrite (power,LOW);
    
 }
 void add_card(char* buffer);
@@ -89,67 +87,29 @@ void loop(){
         }
         nr_bytes_read = 0;
       }
-      if(nr_bytes_read >40)
+      if(nr_bytes_read == 40)
       {
         nr_bytes_read = 0;
       }
         
-  }
-      //Serial.println(buffer);
-      //Serial.println("Hello?");
-    
-    if(rfid.isCard()){
-    
-        if(rfid.readCardSerial()){
-            Serial.print(rfid.serNum[0]);
-            Serial.print(" ");
-            Serial.print(rfid.serNum[1]);
-            Serial.print(" ");
-            Serial.print(rfid.serNum[2]);
-            Serial.print(" ");
-            Serial.print(rfid.serNum[3]);
-            Serial.print(" ");
-            Serial.print(rfid.serNum[4]);
-            Serial.println("");
-
-       
-            /*
-            Serial.print(cards[1][0]);
-            Serial.print(" ");
-            Serial.print(cards[1][1]);
-            Serial.print(" ");
-            Serial.print(cards[1][2]);
-            Serial.print(" ");
-            Serial.print(cards[1][3]);
-            Serial.print(" ");
-            Serial.print(cards[1][4]);
-            Serial.println("");
-            */
-            
-            
-              if(check_card())
-              {
-                green_light();
-              }
-              else
-              {
-                red_light();
-              }
-            }
-            
-        }
-        
+  }   
+  if(rfid.isCard())
+  {
+    if(rfid.readCardSerial())
+    {
+      if(check_card())
+      {
+        green_light();
+      }
+      else
+      {
+        red_light();
+      }
     }
-    
-    
-    
-
-
-
+  }
+}
 void add_card(char* buffer)
 { // adds new card to card list
-          Serial.println(buffer);
-          Serial.println(nr_cards);
           
           char delim[] = ".";
 
@@ -209,10 +169,18 @@ void clear_cards()
 void green_light()
 { // opens door
   Serial.println(F("Welcome Velleman "));
-  delay(1500);
+  digitalWrite(led, HIGH);
+  delay(3000);
+  digitalWrite(led, LOW);
 }
 void red_light()
 {
-  Serial.println(F("Not allowed!"));
-  delay(1500); 
+  // flashes light five times
+  for(int index = 0 ; index < 5 ; index++)
+  {
+    digitalWrite(led,HIGH);
+    delay(100);
+    digitalWrite(led,LOW);
+    delay(100);
+  }
 }
