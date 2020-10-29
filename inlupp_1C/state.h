@@ -31,6 +31,4 @@ typedef enum
     CLEARCARDS
 } COMMANDS;
 
-void initialize_state(STATE* SYSTEM_STATE);
-
 #endif

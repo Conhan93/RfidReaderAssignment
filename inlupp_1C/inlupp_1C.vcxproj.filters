@@ -24,9 +24,6 @@
     <ClCompile Include="safeinput.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="state.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="admin.c">
       <Filter>Source Files</Filter>
     </ClCompile>
