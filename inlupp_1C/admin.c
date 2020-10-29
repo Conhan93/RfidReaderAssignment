@@ -28,7 +28,7 @@ bool valid_id(char* new_id)
     digit = strtok(temp, delim);
     while (digit != NULL)
     {
-        if (atoi(digit) > 257 || atoi(digit) < 0) return false;
+        if (atoi(digit) > 255 || atoi(digit) < 0) return false;
 
         else digit = strtok(NULL, delim);
 
