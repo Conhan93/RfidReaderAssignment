@@ -25,7 +25,7 @@ Card create_card(char* new_id);
 
 void remote_open_door(STATE* SYSTEM_STATE);
 void send_card(STATE* SYSTEM_STATE);
-void create_message(char* message_string, Card* card, char* commands[]);
+void create_message(char* message_string, Card* card, char* command);
 bool clear_cards(STATE* SYSTEM_STATE);
 
 bool load_file(STATE* SYSTEM_STATE);
@@ -124,6 +124,9 @@ void list_cards(STATE* SYSTEM_STATE)
 }
 void change_card_access(STATE* SYSTEM_STATE)
 {
+    /*
+        Handles changing card access value
+    */
     Card* active_card = NULL;
 
     // fetch card, exits if null
@@ -189,14 +192,19 @@ void format_date_string(time_t date_added, char* buffer, int buffersize)
     strftime(buffer, buffersize, "%Y-%m-%d", date_ptr);
 }
 void add_card(STATE* SYSTEM_STATE)
-{
+{ /*
+        Handles sequence for adding a new card to card_list.
+  */
     char new_card_id[STRLEN];
     do
     {
         printf("\nValid card in form x.x.x.x.x where x is an integer between 0 and 257\n");
 
         GetInput("Ange kortnr: ", new_card_id, sizeof(new_card_id));
-        if (valid_id(new_card_id))
+
+        // if valid id and no duplicates exist
+        if (valid_id(new_card_id) && get_card(SYSTEM_STATE->card_list,
+                                     SYSTEM_STATE->nr_cards, new_card_id) == NULL )
         {
             expand_list(SYSTEM_STATE);
             SYSTEM_STATE->card_list[SYSTEM_STATE->nr_cards] = create_card(new_card_id);
@@ -217,7 +225,7 @@ bool valid_id(char* new_id)
     strcpy(temp, new_id);
 
     digit = strtok(temp, delim);
-    while (digit != NULL && counter == 5)
+    while (digit != NULL)
     {
         if (atoi(digit) > 257 || atoi(digit) < 0) return false;
 
@@ -225,7 +233,7 @@ bool valid_id(char* new_id)
 
         counter++;
     }
-    return true;
+    return counter == 5 ? true : false;
 }
 void expand_list(STATE* SYSTEM_STATE)
 {
@@ -256,7 +264,9 @@ Card create_card(char* new_id)
 }
 void remote_open_door(STATE* SYSTEM_STATE)
 {
-
+    /*
+    *   Opens door on device.
+    */
     SerialWritePort(
         SYSTEM_STATE->port,
         SYSTEM_STATE->cmds[OPENDOOR],
@@ -269,9 +279,20 @@ void send_card(STATE* SYSTEM_STATE)
 
     Card* active_card = NULL;
     char message[BUFFERSIZE] = "";
+    bool access = false;
 
-    // fetch card
-    if ((active_card = search_id(SYSTEM_STATE)) == NULL) return;
+    do
+    {
+        // fetch card
+        if ((active_card = search_id(SYSTEM_STATE)) == NULL) return;
+
+        // check if card has access
+        if (active_card->access) break;
+        
+        printf("\nInvalid card. No Access.");
+
+    } while (true);
+    
     
     // compose message to device
     create_message(message,
@@ -279,8 +300,7 @@ void send_card(STATE* SYSTEM_STATE)
         SYSTEM_STATE->cmds[ADDCARD]
     );
 
-    printf("\nSent this: %s", message);
-    return;
+    
     // send message to device
     SerialWritePort(
         SYSTEM_STATE->port,
@@ -305,11 +325,14 @@ bool clear_cards(STATE* SYSTEM_STATE)
 }
 void save_to_file(STATE* SYSTEM_STATE)
 {
+    /*  Stores card list in file, creates file if one doesn't exist     */
+
     char filename[] = "cards.bin";
 
     FILE* file_ptr;
-
+    // open in write binary
     file_ptr = fopen(filename, "wb");
+
     if (file_ptr)
     {
         fwrite(
@@ -324,6 +347,7 @@ void save_to_file(STATE* SYSTEM_STATE)
 }
 int get_file_size(FILE* file_ptr)
 {
+    // returns the size of the file.
     int start = ftell(file_ptr);
 
     fseek(file_ptr, 0L, SEEK_END);
@@ -336,11 +360,14 @@ int get_file_size(FILE* file_ptr)
 }
 bool load_file(STATE* SYSTEM_STATE)
 {
+    /* Loads cards from files if available  */
+
+
     char filename[] = "cards.bin";
     int filesize = 0;
 
     FILE* file_ptr;
-
+    // open read binary
     file_ptr = fopen(filename, "rb");
 
     if (file_ptr == NULL)
@@ -348,12 +375,14 @@ bool load_file(STATE* SYSTEM_STATE)
         fclose(file_ptr);
         return false;
     }
-
+    // get size of file
     filesize = get_file_size(file_ptr);
 
+    // get amount of cards in file and expand list to accommodate
     SYSTEM_STATE->nr_cards = filesize / sizeof(Card);
     expand_list(SYSTEM_STATE);
 
+    // get cards
     fread(SYSTEM_STATE->card_list,
         sizeof(Card),
         SYSTEM_STATE->nr_cards,
