@@ -1,5 +1,15 @@
 #include "state.h"
 
+
+
+// for device_com
+typedef enum
+{
+	OPENDOOR,
+	CLEARCARDS,
+	ADDCARD
+};
+
 // file handling -- files.c
 void save_to_file(STATE* SYSTEM_STATE);
 bool load_file(STATE* SYSTEM_STATE);

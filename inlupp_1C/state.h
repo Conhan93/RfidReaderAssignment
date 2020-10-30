@@ -22,13 +22,6 @@ typedef struct
     Card* card_list;
     int nr_cards;
     SERIALPORT port;
-    char cmds[3][STRLEN];
 } STATE;
-typedef enum
-{
-    ADDCARD,
-    OPENDOOR,
-    CLEARCARDS
-} COMMANDS;
 
 #endif

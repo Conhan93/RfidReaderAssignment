@@ -2,11 +2,15 @@
 
 bool remote_open_door(STATE* SYSTEM_STATE)
 {
+    char command[2];
+
+    itoa(OPENDOOR, command, 10);
+    
     // opens door on device
     return SerialWritePort(
         SYSTEM_STATE->port,
-        SYSTEM_STATE->cmds[OPENDOOR],
-        BUFFERSIZE
+        command,
+        sizeof(command)
     );
 }
 void create_message(char* message_string, Card* card, char* command)
@@ -18,9 +22,14 @@ void create_message(char* message_string, Card* card, char* command)
 bool clear_cards(STATE* SYSTEM_STATE)
 {
     // clears stored cards on device
+
+    char command[2];
+
+    itoa(CLEARCARDS, command, 10);
+
     return SerialWritePort(
         SYSTEM_STATE->port,
-        SYSTEM_STATE->cmds[CLEARCARDS],
-        BUFFERSIZE
+        command,
+        sizeof(command)
     );
 }
