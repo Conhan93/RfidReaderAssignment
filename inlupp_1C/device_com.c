@@ -1,9 +1,9 @@
 #include "admin.h"
 
-void remote_open_door(STATE* SYSTEM_STATE)
+bool remote_open_door(STATE* SYSTEM_STATE)
 {
     // opens door on device
-    SerialWritePort(
+    return SerialWritePort(
         SYSTEM_STATE->port,
         SYSTEM_STATE->cmds[OPENDOOR],
         BUFFERSIZE
@@ -18,7 +18,7 @@ void create_message(char* message_string, Card* card, char* command)
 bool clear_cards(STATE* SYSTEM_STATE)
 {
     // clears stored cards on device
-    SerialWritePort(
+    return SerialWritePort(
         SYSTEM_STATE->port,
         SYSTEM_STATE->cmds[CLEARCARDS],
         BUFFERSIZE

@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <time.h>
-#include "serial.h"
 #include "safeinput.h"
 #include "state.h"
 #include "admin.h"
@@ -32,7 +31,8 @@ int main()
         switch (selection)
         {
         case 1:
-            remote_open_door(&SYSTEM_STATE);
+            if (remote_open_door(&SYSTEM_STATE)) printf("\nDoor Open");
+            else printf("\nUnable to open door");
             break;
         case 2:
             list_cards(&SYSTEM_STATE);
@@ -50,7 +50,8 @@ int main()
             send_card(&SYSTEM_STATE);
             break;
         case 7:
-            clear_cards(&SYSTEM_STATE);
+            if (clear_cards(&SYSTEM_STATE)) printf("\nCards cleared");
+            else printf("\nUnable to clear cards");
             break;
         case 9:
             SerialClose(SYSTEM_STATE.port);

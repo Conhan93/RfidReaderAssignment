@@ -6,7 +6,7 @@ bool load_file(STATE* SYSTEM_STATE);
 int get_file_size(FILE* file_ptr);
 
 // device communication -- device_com.c
-void remote_open_door(STATE* SYSTEM_STATE);
+bool remote_open_door(STATE* SYSTEM_STATE);
 void create_message(char* message_string, Card* card, char* command);
 bool clear_cards(STATE* SYSTEM_STATE);
 
