@@ -161,7 +161,7 @@ void add_card(STATE* SYSTEM_STATE)
     do
  
     {
-        printf("\nValid card in form x.x.x.x.x where x is an integer between 0 and 255\n");
+        printf("\nValid card in form x.x.x.x.x where x is an integer between 1 and 255\n");
 
         GetInput("Ange kortnr: ", new_card_id, sizeof(new_card_id));
 
