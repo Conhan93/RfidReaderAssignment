@@ -10,9 +10,11 @@ void initialize_state(STATE* SYSTEM_STATE)
     SYSTEM_STATE->port = SerialInit("COM3");
 
     // initialize commands for device communication
+    /*
     strcpy(SYSTEM_STATE->cmds[0], "ADDCARD.");
     strcpy(SYSTEM_STATE->cmds[1], "OPENDOOR");
     strcpy(SYSTEM_STATE->cmds[2], "CLEARALLCARDS");
+    */
 }
 
 

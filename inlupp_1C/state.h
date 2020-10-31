@@ -7,7 +7,7 @@
 
 
 #define STRLEN 30
-#define BUFFERSIZE 40
+#define BUFFERSIZE 10
 
 typedef struct
 {

@@ -184,8 +184,8 @@ void send_card(STATE* SYSTEM_STATE)
     /*    Sequence for adding a card to device.     */
 
     Card* active_card = NULL;
-    char message[BUFFERSIZE] = "";
-    bool access = false;
+    unsigned char message[BUFFERSIZE] = "";
+    //bool access = false;
 
     do
     {
@@ -202,8 +202,7 @@ void send_card(STATE* SYSTEM_STATE)
     
     // compose message to device
     create_message(message,
-        active_card,
-        SYSTEM_STATE->cmds[ADDCARD]
+        active_card
     );
 
     
