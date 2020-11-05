@@ -19,7 +19,7 @@ bool remote_open_door(STATE* SYSTEM_STATE)
         sizeof(message)
     );
 }
-void create_message(unsigned char message_string[], Card* card)
+void create_message(unsigned char* message_string, Card* card)
 {
     // formats message with add card command and card ID
     

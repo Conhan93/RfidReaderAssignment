@@ -11,6 +11,8 @@ void change_card_access(STATE* SYSTEM_STATE);
 int admin_menu();
 void add_card(STATE* SYSTEM_STATE);
 void send_card(STATE* SYSTEM_STATE);
+void invalid_input();
+
 
 int main()
 {
@@ -79,7 +81,7 @@ int admin_menu()
         "\n7. Clear all cards on device"
         "\n9. Exit\n");
 
-    GetInputInt(NULL, &selection);
+    while (!GetInputInt(NULL, &selection)) invalid_input();
 
     return selection;
 }
@@ -125,8 +127,11 @@ void change_card_access(STATE* SYSTEM_STATE)
     {
         if (new_access == 0 || new_access == 1)
             active_card->access = new_access;
-        else printf("\nInvalid input, exiting");
+
     }
+    else invalid_input();
+
+    printf("\nExiting access...");
 
 }
 Card* search_id(STATE* SYSTEM_STATE)
@@ -149,6 +154,7 @@ Card* search_id(STATE* SYSTEM_STATE)
                 search_term
             );
         }
+        else invalid_input();
     }
     return active_card;
 }
@@ -163,7 +169,7 @@ void add_card(STATE* SYSTEM_STATE)
     {
         printf("\nValid card in form x.x.x.x.x where x is an integer between 1 and 255\n");
 
-        GetInput("Ange kortnr: ", new_card_id, sizeof(new_card_id));
+        while (GetInput("\nAnge kortnr: ", new_card_id, sizeof(new_card_id))) invalid_input();
 
         // if valid id and no duplicates exist
         if (valid_id(new_card_id) && get_card(SYSTEM_STATE->card_list,
@@ -213,5 +219,6 @@ void send_card(STATE* SYSTEM_STATE)
         BUFFERSIZE
     );
 }
-
+// flushes stdin and prints out invalid message
+void invalid_input() { fflush(stdin); printf("\nInvalid input..."); }
 
