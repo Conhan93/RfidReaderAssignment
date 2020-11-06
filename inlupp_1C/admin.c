@@ -9,10 +9,6 @@ void initialize_state(STATE* SYSTEM_STATE)
     // initialize port
     SYSTEM_STATE->port = SerialInit("COM3");
 
-    // initialize commands for device communication
-    strcpy(SYSTEM_STATE->cmds[0], "ADDCARD.");
-    strcpy(SYSTEM_STATE->cmds[1], "OPENDOOR");
-    strcpy(SYSTEM_STATE->cmds[2], "CLEARALLCARDS");
 }
 
 
@@ -28,7 +24,7 @@ bool valid_id(char* new_id)
     digit = strtok(temp, delim);
     while (digit != NULL)
     {
-        if (atoi(digit) > 255 || atoi(digit) < 0) return false;
+        if (atoi(digit) > 255 || atoi(digit) <= 0) return false;
 
         else digit = strtok(NULL, delim);
 
@@ -85,4 +81,13 @@ void format_date_string(time_t date_added, char* buffer, int buffersize)
     date_ptr = localtime(&date_added);
 
     strftime(buffer, buffersize, "%Y-%m-%d", date_ptr);
+}
+void add_card(STATE* SYSTEM_STATE, char* new_card_id)
+{ /*
+        Adds new card to list
+  */
+    expand_list(SYSTEM_STATE);
+    SYSTEM_STATE->card_list[SYSTEM_STATE->nr_cards] = create_card(new_card_id);
+    SYSTEM_STATE->nr_cards++;
+    
 }

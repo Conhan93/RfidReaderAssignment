@@ -7,7 +7,7 @@
 
 
 #define STRLEN 30
-#define BUFFERSIZE 40
+#define BUFFERSIZE 10
 
 typedef struct
 {
@@ -22,13 +22,6 @@ typedef struct
     Card* card_list;
     int nr_cards;
     SERIALPORT port;
-    char cmds[3][STRLEN];
 } STATE;
-typedef enum
-{
-    ADDCARD,
-    OPENDOOR,
-    CLEARCARDS
-} COMMANDS;
 
 #endif

@@ -22,6 +22,14 @@
 
 RFID rfid(SS_PIN,RST_PIN);
 
+enum
+{
+  COMMAND_INDEX,
+  OPENDOOR,
+  CLEARCARDS,
+  ADDCARD
+};
+
 
 // led light for door
 int led = 8; 
@@ -33,7 +41,7 @@ unsigned char serNum[5];
 int nr_cards = 0;
 
 // stores input
-char buffer[40];
+unsigned char buffer[10];
 // recieves input
 char input;
 int nr_bytes_read = 0;
@@ -72,21 +80,21 @@ void loop(){
       nr_bytes_read++;
       if(input == '\0' || input == '\n')
       {
-        if(strstr(buffer,"ADDCARD") && nr_cards < 5)
+        if(buffer[COMMAND_INDEX] == ADDCARD && nr_cards < 5)
         {
           add_card(buffer);
         }
-        if(strstr(buffer,"CLEARALLCARDS"))
+        if(buffer[COMMAND_INDEX] == CLEARCARDS)
         {
           clear_cards();
         }
-        if(strstr(buffer,"OPENDOOR"))
+        if(buffer[COMMAND_INDEX] == OPENDOOR)
         {
           green_light();
         }
         nr_bytes_read = 0;
       }
-      if(nr_bytes_read  == 40)
+      if(nr_bytes_read  == 10)
       {
         nr_bytes_read = 0;
       }
@@ -107,28 +115,12 @@ void loop(){
     }
   }
 }
-void add_card(char* buffer)
+void add_card(unsigned char* buffer)
 { // adds new card to card list
-          
-          char delim[] = ".";
-
-          char* digit = strtok(buffer,delim);
-          int iteration = 0;
-          // splits input string
-          while(digit)
+          for(int index = 1 ; index <= 5 ; index++)
           {
-            if(iteration > 0)
-            {
               // adds card ID numbers to card ID
- 
-              card_list[nr_cards].card_nr[iteration-1] = (unsigned char)atoi(digit);
-            
-              
-            }
-  
-            // moves onto next word/split string
-            digit = strtok(NULL,delim);
-            iteration++;
+            card_list[nr_cards].card_nr[index-1] = buffer[index];
           }
           nr_cards++;
 }
