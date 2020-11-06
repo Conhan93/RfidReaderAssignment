@@ -82,3 +82,12 @@ void format_date_string(time_t date_added, char* buffer, int buffersize)
 
     strftime(buffer, buffersize, "%Y-%m-%d", date_ptr);
 }
+void add_card(STATE* SYSTEM_STATE, char* new_card_id)
+{ /*
+        Adds new card to list
+  */
+    expand_list(SYSTEM_STATE);
+    SYSTEM_STATE->card_list[SYSTEM_STATE->nr_cards] = create_card(new_card_id);
+    SYSTEM_STATE->nr_cards++;
+    
+}

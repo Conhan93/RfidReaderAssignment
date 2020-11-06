@@ -27,6 +27,7 @@ void expand_list(STATE* SYSTEM_STATE);
 Card create_card(char* new_id);
 void format_date_string(time_t date_added, char* buffer, int buffersize);
 Card* get_card(Card* card_list, int nr_cards, char* search_term);
+void add_card(STATE* SYSTEM_STATE, char* new_card_id);
 
 // state initialization -- admin.c
 void initialize_state(STATE* SYSTEM_STATE);

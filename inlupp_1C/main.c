@@ -9,9 +9,10 @@ void list_cards(STATE* SYSTEM_STATE);
 Card* search_id(STATE* SYSTEM_STATE);
 void change_card_access(STATE* SYSTEM_STATE);
 int admin_menu();
-void add_card(STATE* SYSTEM_STATE);
+
 void send_card(STATE* SYSTEM_STATE);
 void invalid_input();
+bool add_new_card();
 
 
 int main()
@@ -38,9 +39,6 @@ int main()
             break;
         case 2:
             list_cards(&SYSTEM_STATE);
-            break;
-        case 3:
-            add_card(&SYSTEM_STATE);
             break;
         case 4:
             change_card_access(&SYSTEM_STATE);
@@ -74,7 +72,6 @@ int admin_menu()
     printf("\n\n\n****ADMIN MENU****\n");
     printf("\n1.Remote Open Door"
         "\n2. List all cards in system"
-        "\n3. Add card to list"
         "\n4. Add/remove access"
         "\n5. Save cards to file"
         "\n6. Send a card to device"
@@ -114,22 +111,37 @@ void change_card_access(STATE* SYSTEM_STATE)
         Handles changing card access value
     */
     Card* active_card = NULL;
+    char new_card_id[STRLEN];
 
-    // fetch card, exits if null
-    if ((active_card = search_id(SYSTEM_STATE)) == NULL) return;
+    printf("\nValid card in form x.x.x.x.x where x is an integer between 1 and 255\n");
 
-    int new_access = 0;
-
-    printf("\nThis card has %s, enter 1 for access, 2 for no access",
-        active_card->access ? "access" : "no access");
-    // sets new access for card
-    if (GetInputInt(NULL, &new_access))
+    while (GetInput("\nAnge kortnr: ", new_card_id, sizeof(new_card_id))) invalid_input();
+    if (valid_id(new_card_id))
     {
-        if (new_access == 0 || new_access == 1)
-            active_card->access = new_access;
+        if ((active_card = get_card(SYSTEM_STATE->card_list, SYSTEM_STATE->nr_cards, new_card_id)) == NULL)
+        {
+            if (add_new_card())
+                add_card(SYSTEM_STATE, new_card_id);
+            return;
+        }
+        else
+        {
+            int new_access = 0;
 
+            printf("\nThis card has %s, enter 1 for access, 2 for no access",
+                active_card->access ? "access" : "no access");
+            // sets new access for card
+            if (GetInputInt(NULL, &new_access))
+            {
+                if (new_access == 0 || new_access == 1)
+                    active_card->access = new_access;
+
+            }
+            else invalid_input();
+        }
     }
-    else invalid_input();
+    else printf("\nInvalid ID...");
+    
 
     printf("\nExiting access...");
 
@@ -159,31 +171,7 @@ Card* search_id(STATE* SYSTEM_STATE)
     return active_card;
 }
 
-void add_card(STATE* SYSTEM_STATE)
-{ /*
-        Handles sequence for adding a new card to card_list.
-  */
-    char new_card_id[STRLEN];
-    do
- 
-    {
-        printf("\nValid card in form x.x.x.x.x where x is an integer between 1 and 255\n");
 
-        while (GetInput("\nAnge kortnr: ", new_card_id, sizeof(new_card_id))) invalid_input();
-
-        // if valid id and no duplicates exist
-        if (valid_id(new_card_id) && get_card(SYSTEM_STATE->card_list,
-                                     SYSTEM_STATE->nr_cards, new_card_id) == NULL )
-        {
-            expand_list(SYSTEM_STATE);
-            SYSTEM_STATE->card_list[SYSTEM_STATE->nr_cards] = create_card(new_card_id);
-            SYSTEM_STATE->nr_cards++;
-            return;
-        }
-        else printf("\nInvalid ID");
-
-    } while (true);
-}
 
 void send_card(STATE* SYSTEM_STATE)
 {
@@ -191,7 +179,7 @@ void send_card(STATE* SYSTEM_STATE)
 
     Card* active_card = NULL;
     unsigned char message[BUFFERSIZE] = "";
-    //bool access = false;
+    
 
     do
     {
@@ -221,4 +209,20 @@ void send_card(STATE* SYSTEM_STATE)
 }
 // flushes stdin and prints out invalid message
 void invalid_input() { fflush(stdin); printf("\nInvalid input..."); }
+bool add_new_card()
+{
+    char sel = 0;
+    while (!GetInputChar("\nID not found, create new card"
+        "with entered id?(y/n): ", &sel)) invalid_input();
+    switch (sel)
+    {
+    case 'y' :
+        return true;
+    case 'n' : 
+        return false;
+    default:
+        printf("\nInvalid input..");
+        break;
+    }
+}
 
